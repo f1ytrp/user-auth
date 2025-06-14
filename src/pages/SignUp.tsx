@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import '../App.css';
+import { supabase } from '../client';
 
 type FormData = {
   fullName: string;
@@ -24,9 +25,32 @@ const SignUp: React.FC = () => {
     }));
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     console.log('Submitted:', formData);
+    const { fullName, email, password } = formData;
+    try{
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
+        }
+    })
+    if (error) {
+      console.error('Error from Supabase:', error)
+      alert('Error signing up: ' + error.message)
+    } else {
+      console.log('Sign up successful:', data);
+      alert('Sign up successful! Please check your email for confirmation.');
+      setFormData({ fullName: '', email: '', password: '' });                       // Reset form
+    }
+    } catch (error : any) {
+      console.error('Unexpected error signing up:', error);
+      alert('Unexpected Error: ' + error.message);
+    }
   }
 
   return (
