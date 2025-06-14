@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import '../App.css';
 import { supabase } from '../client';
+import { Link } from 'react-router-dom'
 
 type FormData = {
   fullName: string;
@@ -80,6 +81,13 @@ const SignUp: React.FC = () => {
         />
         <button type="submit">Submit</button>
       </form>
+
+      <p>
+        Already Signed Up? Then {' '}
+        <Link to="/LogIn" style={{ color: 'blue' }}>
+          Login...
+        </Link>
+      </p>
     </div>
   );
 };
