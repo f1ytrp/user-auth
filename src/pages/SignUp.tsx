@@ -3,6 +3,8 @@ import type { ChangeEvent, FormEvent } from 'react';
 import '../App.css';
 import { supabase } from '../client';
 import { Link } from 'react-router-dom'
+import AuthRedirectHandler from './AuthRedirectHandler';
+
 
 type FormData = {
   fullName: string;
@@ -11,6 +13,7 @@ type FormData = {
 };
 
 const SignUp: React.FC = () => {
+
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
@@ -46,7 +49,7 @@ const SignUp: React.FC = () => {
     } else {
       console.log('Sign up successful:', data);
       alert('Sign up successful! Please check your email for confirmation.');
-      setFormData({ fullName: '', email: '', password: '' });                       // Reset form
+      setFormData({ fullName: '', email: '', password: '' });
     }
     } catch (error : any) {
       console.error('Unexpected error signing up:', error);
@@ -54,8 +57,28 @@ const SignUp: React.FC = () => {
     }
   }
 
+  const googleSignIn = async () => {
+    try {
+      const {data, error} = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      })
+      if(error) {
+        console.log('Google Sign-In error :', error.message)
+      } else {
+        console.log('Redirecting to Google...');
+        console.log('Sign up successful:', data);
+      }
+    } catch (error : any) {
+      console.error('Unexpected error signing up:', error);
+      alert('Unexpected Error: ' + error.message)
+    }
+  };
+
+  
+
   return (
     <div className="container">
+      <AuthRedirectHandler />
       <form className="form" onSubmit={handleSubmit}>
         <h2>Sign Up</h2>
         <input
@@ -88,6 +111,31 @@ const SignUp: React.FC = () => {
           Login...
         </Link>
       </p>
+
+      <button 
+        onClick={googleSignIn}
+        style={{
+          marginTop: '1rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          backgroundColor: '#ffffff',
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+          padding: '10px 15px',
+          fontSize: '14px',
+          fontWeight: 500,
+          cursor: 'pointer',
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png"
+          alt="Google logo"
+          style={{ width: '20px', height: '20px' }}
+        />
+        Sign in with Google
+      </button>
     </div>
   );
 };
